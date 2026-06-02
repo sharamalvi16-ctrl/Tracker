@@ -1,0 +1,27 @@
+{
+  "name": "taskflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TaskFlow full-stack task tracker and Kanban board.",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace @taskflow/api\" \"npm run dev --workspace @taskflow/web\"",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "format": "prettier --write .",
+    "db:migrate": "npm run prisma:migrate --workspace @taskflow/api",
+    "db:seed": "npm run prisma:seed --workspace @taskflow/api",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "eslint": "^9.28.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  },
+  "lint-staged": {"*.{ts,tsx,js,jsx,json,md,css}": "prettier --write"},
+  "engines": {"node": ">=22.0.0"}
+}

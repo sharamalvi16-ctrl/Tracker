@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum ActivityAction {
+  CREATED
+  UPDATED
+  DELETED
+  MOVED
+  COMMENTED
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  avatar        String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  boards        Board[]
+  assignedTasks Task[]         @relation("TaskAssignee")
+  refreshTokens RefreshToken[]
+  comments      Comment[]
+  activities    Activity[]
+
+  @@index([email])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Board {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  ownerId     String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  columns     Column[]
+  activities  Activity[]
+
+  @@index([ownerId])
+  @@index([title])
+}
+
+model Column {
+  id       String @id @default(cuid())
+  title    String
+  position Int
+  boardId  String
+  board    Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tasks    Task[]
+
+  @@index([boardId, position])
+}
+
+model Task {
+  id             String     @id @default(cuid())
+  title          String
+  description    String?
+  priority       Priority   @default(MEDIUM)
+  dueDate        DateTime?
+  status         TaskStatus @default(TODO)
+  position       Int        @default(0)
+  labels         String[]   @default([])
+  columnId       String
+  assignedUserId String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  column         Column     @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  assignedUser   User?      @relation("TaskAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  comments       Comment[]
+  activities     Activity[]
+
+  @@index([columnId, position])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@index([title])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  taskId    String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+}
+
+model Activity {
+  id        String         @id @default(cuid())
+  action    ActivityAction
+  message   String
+  boardId   String?
+  taskId    String?
+  actorId   String
+  createdAt DateTime       @default(now())
+  board     Board?         @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  task      Task?          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  actor     User           @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([boardId])
+  @@index([taskId])
+  @@index([actorId])
+}

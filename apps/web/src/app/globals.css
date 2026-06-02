@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 218 35% 97%;
+  --foreground: 224 38% 8%;
+  --card: 0 0% 100%;
+  --border: 220 22% 86%;
+  --muted: 219 18% 46%;
+  --primary: 176 84% 44%;
+  --accent: 339 82% 61%;
+}
+
+.dark {
+  --background: 230 38% 5%;
+  --foreground: 210 30% 96%;
+  --card: 229 30% 9%;
+  --border: 223 28% 20%;
+  --muted: 220 15% 66%;
+  --primary: 176 84% 52%;
+  --accent: 339 82% 64%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.galaxy-field {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(45, 212, 191, 0.34), transparent 24rem),
+    radial-gradient(circle at 80% 12%, rgba(244, 114, 182, 0.24), transparent 22rem),
+    radial-gradient(circle at 50% 78%, rgba(250, 204, 21, 0.14), transparent 18rem),
+    linear-gradient(145deg, #050714 0%, #0a1020 48%, #11161d 100%);
+}
+
+.star-layer,
+.star-layer::before,
+.star-layer::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    radial-gradient(circle, rgba(125, 211, 252, 0.8) 1px, transparent 1px);
+  background-size: 70px 70px, 130px 130px;
+  animation: drift 38s linear infinite;
+}
+
+.star-layer::before {
+  opacity: 0.45;
+  transform: scale(1.5);
+  animation-duration: 62s;
+}
+
+.star-layer::after {
+  opacity: 0.25;
+  transform: scale(2.2);
+  animation-duration: 90s;
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-120px, 90px, 0);
+  }
+}
+
+.glass {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(8, 13, 32, 0.72);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(18px);
+}
